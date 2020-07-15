@@ -52,7 +52,7 @@ class Tickers():
             ticker_objects[ticker] = Ticker(ticker)
 
         self.tickers = _namedtuple(
-            "Tickers", [x.replace('.', '_') for x in ticker_objects.keys()], rename=True
+            "Tickers", [x.replace('.', '_').replace('-', '_') for x in ticker_objects.keys()], rename=True
         )(*ticker_objects.values())
 
     def history(self, period="1mo", interval="1d",
@@ -88,7 +88,7 @@ class Tickers():
                               **kwargs)
 
         for symbol in self.symbols:
-            getattr(self.tickers, symbol.replace('.', '_'))._history = data[symbol]
+            getattr(self.tickers, symbol.replace('.', '_').replace('-', '_'))._history = data[symbol]
 
         if group_by == 'column':
             data.columns = data.columns.swaplevel(0, 1)
