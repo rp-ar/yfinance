@@ -55,12 +55,11 @@ class Tickers():
 
         self.tickers = _namedtuple(
             "Tickers", [self.ticker_to_attr(x) for x in ticker_objects.keys()], rename=True
-            #"Tickers", [x.replace('.', '_').replace('-', '_') for x in ticker_objects.keys()], rename=True
         )(*ticker_objects.values())
 
     @staticmethod
     def ticker_to_attr(ticker: str):
-        return re.sub("[^a-zA-Z0-9_]+", "_", re.sub("^[0-9]", "X", ticker.lower().replace('.', '_').replace('-', '_')))
+        return re.sub("[^a-zA-Z0-9_]+", "_", re.sub("(^[0-9])", "YFIN_\\1", ticker.lower().replace('.', '_').replace('-', '_')))
 
     def history(self, period="1mo", interval="1d",
                 start=None, end=None, prepost=False,
