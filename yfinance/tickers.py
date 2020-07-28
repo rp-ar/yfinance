@@ -21,6 +21,8 @@
 
 from __future__ import print_function
 
+import re
+
 from . import Ticker, multi
 from collections import namedtuple as _namedtuple
 
@@ -52,8 +54,13 @@ class Tickers():
             ticker_objects[ticker] = Ticker(ticker)
 
         self.tickers = _namedtuple(
-            "Tickers", [x.replace('.', '_').replace('-', '_') for x in ticker_objects.keys()], rename=True
+            "Tickers", [self.ticker_to_attr(x) for x in ticker_objects.keys()], rename=True
+            #"Tickers", [x.replace('.', '_').replace('-', '_') for x in ticker_objects.keys()], rename=True
         )(*ticker_objects.values())
+
+    @staticmethod
+    def ticker_to_attr(ticker: str):
+        return re.sub("[^a-zA-Z0-9_]+", "_", re.sub("^[0-9]", "X", ticker.lower().replace('.', '_').replace('-', '_')))
 
     def history(self, period="1mo", interval="1d",
                 start=None, end=None, prepost=False,
@@ -88,7 +95,7 @@ class Tickers():
                               **kwargs)
 
         for symbol in self.symbols:
-            getattr(self.tickers, symbol.replace('.', '_').replace('-', '_'))._history = data[symbol]
+            getattr(self.tickers, self.ticker_to_attr(symbol))._history = data[symbol]
 
         if group_by == 'column':
             data.columns = data.columns.swaplevel(0, 1)
