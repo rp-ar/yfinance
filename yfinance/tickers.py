@@ -22,6 +22,7 @@
 from __future__ import print_function
 
 import re
+import pandas as pd
 
 from . import Ticker, multi
 from collections import namedtuple as _namedtuple
@@ -94,6 +95,8 @@ class Tickers():
                               **kwargs)
 
         for symbol in self.symbols:
+            if symbol not in data:
+                data.columns = pd.MultiIndex.from_product([[symbol], data.columns])
             getattr(self.tickers, self.ticker_to_attr(symbol))._history = data[symbol]
 
         if group_by == 'column':
