@@ -97,7 +97,11 @@ class Tickers():
         for symbol in self.symbols:
             if symbol not in data:
                 data.columns = pd.MultiIndex.from_product([[symbol], data.columns])
-            getattr(self.tickers, self.ticker_to_attr(symbol))._history = data[symbol]
+            try:
+                getattr(self.tickers, self.ticker_to_attr(symbol))._history = data[symbol]
+            except Exception:
+                idx = self.symbols.index(symbol)
+                self.tickers[idx]._history = data[symbol]
 
         if group_by == 'column':
             data.columns = data.columns.swaplevel(0, 1)
